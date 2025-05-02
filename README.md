@@ -68,7 +68,12 @@ pip install mlstac sen2sr[full]
 
 ## Predict 10m and 20m bands
 
-### **Load libraries**
+
+This example demonstrates the use of the `SEN2SRLite` model to enhance the spatial resolution of Sentinel-2 imagery. A 
+Sentinel-2 L2A data cube is created over a specified region and time range using the cubo library, including both 10 m 
+and 20 m bands. The pretrained model, downloaded via mlstac, takes a single normalized sample as input and predicts a 
+HR output. The visualization compares the original RGB composite to the super-resolved result.
+
 
 ```python
 import matplotlib.pyplot as plt
@@ -77,37 +82,6 @@ import torch
 import cubo
 
 import sen2sr
-```
-
-### **Download Sentinel-2 L2A cube**
-
-```python
-# Create a Sentinel-2 L2A data cube for a specific location and date range
-da = cubo.create(
-    lat=39.49152740347753,
-    lon=-0.4308725142800361,
-    collection="sentinel-2-l2a",
-    bands=["B02", "B03", "B04", "B05", "B06", "B07", "B08", "B8A", "B11", "B12"],
-    start_date="2023-01-01",
-    end_date="2023-12-31",
-    edge_size=64,
-    resolution=10
-)
-```
-
-### **Prepare the data (CPU and GPU usage)**
-
-```python
-# Check if CUDA is available, use GPU if possible
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-original_s2_numpy = (da[11].compute().to_numpy() / 10_000).astype("float32")
-X = torch.from_numpy(original_s2_numpy).float().to(device)
-```
-
-
-### **Download and Load the model**
-
-```python
 import mlstac
 
 # Download the model
@@ -120,13 +94,29 @@ mlstac.download(
 model = mlstac.load("model/SEN2SRLite").compiled_model()
 model = model.to(device)
 
+
+# Create a Sentinel-2 L2A data cube for a specific location and date range
+da = cubo.create(
+    lat=39.49152740347753,
+    lon=-0.4308725142800361,
+    collection="sentinel-2-l2a",
+    bands=["B02", "B03", "B04", "B05", "B06", "B07", "B08", "B8A", "B11", "B12"],
+    start_date="2023-01-01",
+    end_date="2023-12-31",
+    edge_size=64,
+    resolution=10
+)
+
+
+# Prepare the data to be used in the model, select just one sample 
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+original_s2_numpy = (da[11].compute().to_numpy() / 10_000).astype("float32")
+X = torch.from_numpy(original_s2_numpy).float().to(device)
+
 # Apply model
 superX = model(X[None]).squeeze(0)
-```
 
-The first plot shows the original Sentinel-2 RGB image (10m resolution). The second plot displays the enhanced version with finer spatial details (2.5m resolution) using a lightweight CNN.
-
-```python
+# Visualize the results
 fig, ax = plt.subplots(1, 2, figsize=(10, 5))
 ax[0].imshow(X[[2, 1, 0]].permute(1, 2, 0).cpu().numpy()*4)
 ax[0].set_title("Original S2")
@@ -141,6 +131,12 @@ plt.show()
 
 
 ## **Predict only RGBNIR bands**
+
+This example demonstrates the use of the SEN2SRLite_RGBN model variant to enhance the spatial resolution 
+of only the 10 m Sentinel-2 bands: red (B04), green (B03), blue (B02), and near-infrared (B08). A Sentinel-2 L2A 
+data cube is created using the cubo library for a specific location and date range. The input is normalized and 
+passed to a pretrained non-reference model optimized for RGB+NIR inputs. 
+
 
 ```python
 import matplotlib.pyplot as plt
@@ -185,6 +181,12 @@ superX = model(X[None]).squeeze(0)
 ```
 
 ## **Predict on large images**
+
+This example demonstrates the use of `SEN2SRLite_RGBN` for super-resolving large Sentinel-2 RGB+NIR images by chunking the 
+input into smaller overlapping tiles. Although the model is trained to operate on fixed-size 128×128 patches, the 
+`sen2sr.predict_large` utility automatically segments larger inputs into these tiles, applies the model to 
+each tile independently, and then reconstructs the full image. An overlap margin (e.g., 32 pixels) is 
+introduced between tiles to minimize edge artifacts and ensure continuity across tile boundaries.
 
 ```python
 import matplotlib.pyplot as plt
@@ -231,6 +233,12 @@ superX = sen2sr.predict_large(
 
 ### Estimate the Local Attention Map of the model 📊
 
+This example computes the Local Attention Map (LAM) to analyze the model's spatial sensitivity 
+and robustness. The input image is scanned with a sliding window, and the model's attention is 
+estimated across multiple upscaling factors. The resulting KDE map highlights regions where 
+the model focuses more strongly, while the robustness vector quantifies the model's stability 
+to spatial perturbations.
+
 
 ```python
 import matplotlib.pyplot as plt
@@ -258,8 +266,6 @@ da = cubo.create(
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 original_s2_numpy = (da[11].compute().to_numpy() / 10_000).astype("float32")
 X = torch.from_numpy(original_s2_numpy).float().to(device)
-
-
 
 
 kde_map, complexity_metric, robustness_metric, robustness_vector = sen2sr.lam(
