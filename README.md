@@ -56,13 +56,13 @@
 
 ## **Installation**
 
-Install the SEN2SRLite version using pip:
+Install the **SEN2SRLite** version using pip:
 
 ```bash
 pip install sen2sr mlstac git+https://github.com/ESDS-Leipzig/cubo.git
 ```
 
-For using the full version of SEN2SR, which employs the Mamba architecture, install as follows:
+For using the full version of **SEN2SR**, which employs the Mamba architecture, install as follows:
 
 1. Create a fresh Conda environment:
 
