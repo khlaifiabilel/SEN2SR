@@ -51,25 +51,12 @@
 
 **sen2sr** is a Python package designed to enhance the spatial resolution of Sentinel-2 satellite images to 2.5 meters using a set of neural network models. 
 
-<<<<<<< Updated upstream
 | Model | Description | Run Link |
 |--------|-------------|---------|
 | **Run SENSRLite** | A lightweight SR model optimized for running fast! | <a target="_blank" href="https://colab.research.google.com/drive/1UQE0Zwvjc4ZRlbMRPOV3gS67jeMFc_hp"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a> |
 | **Run SENSR** | Our most accurate SR model! | <a target="_blank" href="https://colab.research.google.com/drive/1TKGAhNbZUxu-q3WDfeICBj1shcQmXcUm"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a> |
 </a> |  
 
-
-
-=======
-
-| Model | Description | Run Link |
-|--------|-------------|---------|
-| **Run SENSRLite** | A lightweight SR model optimized for running fast! | <a target="_blank" href="https://colab.research.google.com/drive/1x65GoI5hOfgX61LhtbATSBm7HySUHSw9?usp=sharing"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a> |
-| **Run SENSR** | Our most accurate SR model! | <a target="_blank" href="https://colab.research.google.com/drive/1MdhdsPwJyV3f0jUgW_WaVeO3-aqA80OG?usp=sharing"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a> |
-</a> |  
-
-
->>>>>>> Stashed changes
 ## **Installation**
 
 Install the SEN2SRLite version using pip:
