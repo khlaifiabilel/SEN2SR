@@ -62,15 +62,33 @@ Install the SEN2SRLite version using pip:
 pip install sen2sr mlstac git+https://github.com/ESDS-Leipzig/cubo.git
 ```
 
-For the full version, which use Mamba arquitecture, install as follows:
+For using the full version of SEN2SR, which employs the Mamba architecture, install as follows:
+
+1. Create a fresh Conda environment:
 
 ```bash
-pip install mamba-ssm --no-build-isolation -q
+conda create -n test_env python=3.11
+conda activate test_env
 ```
 
+2. Install PyTorch with CUDA support:
+
+```bash
+pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
+```
+
+3. Attempt to install mamba-ssm using --no-build-isolation:
+
+```bash
+pip install mamba-ssm --no-build-isolation
+```
+
+4. Install the remaining dependencies:
 ```bash
 pip install sen2sr mlstac git+https://github.com/ESDS-Leipzig/cubo.git
 ```
+
+Adapted from this [state-spaces/mamba issue](https://github.com/state-spaces/mamba/issues/662).
 
 
 ## From 10m and 20m Sentinel-2 bands to 2.5m

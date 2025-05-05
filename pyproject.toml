@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sen2sr"
-version = "0.8.0"
+version = "0.8.5"
 description = "A Python package to super-resolve Sentinel-2 satellite imagery up to 2.5 meters."
 authors = ["Cesar Aybar <cesar.aybar@uv.es>", "Julio Contreras <julio.contreras@uv.es>"]
 repository = "https://github.com/ESAOpenSR/sen2sr"

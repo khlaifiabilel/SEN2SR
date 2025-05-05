@@ -10,10 +10,12 @@ except PackageNotFoundError:
 
 
 try:
-    import torch    
+    import torch
+    import timm
 except ImportError:
-    raise("SEN2SR: PyTorch is not available. Install it to use this package.")
-    
+    raise ImportError(
+        "sen2sr requires torch and timm. Please install them."        
+    )
 
 __all__ = [
     "__version__",
