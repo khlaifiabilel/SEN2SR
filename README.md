@@ -51,6 +51,7 @@
 
 **sen2sr** is a Python package designed to enhance the spatial resolution of Sentinel-2 satellite images to 2.5 meters using a set of neural network models. 
 
+<<<<<<< Updated upstream
 | Model | Description | Run Link |
 |--------|-------------|---------|
 | **Run SENSRLite** | A lightweight SR model optimized for running fast! | <a target="_blank" href="https://colab.research.google.com/drive/1UQE0Zwvjc4ZRlbMRPOV3gS67jeMFc_hp"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a> |
@@ -59,18 +60,32 @@
 
 
 
+=======
+
+| Model | Description | Run Link |
+|--------|-------------|---------|
+| **Run SENSRLite** | A lightweight SR model optimized for running fast! | <a target="_blank" href="https://colab.research.google.com/drive/1x65GoI5hOfgX61LhtbATSBm7HySUHSw9?usp=sharing"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a> |
+| **Run SENSR** | Our most accurate SR model! | <a target="_blank" href="https://colab.research.google.com/drive/1MdhdsPwJyV3f0jUgW_WaVeO3-aqA80OG?usp=sharing"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a> |
+</a> |  
+
+
+>>>>>>> Stashed changes
 ## **Installation**
 
 Install the SEN2SRLite version using pip:
 
 ```bash
-pip install mlstac sen2sr
+pip install sen2sr mlstac git+https://github.com/ESDS-Leipzig/cubo.git
 ```
 
 For the full version, which use Mamba arquitecture, install as follows:
 
 ```bash
-pip install mlstac sen2sr[full]
+pip install mamba-ssm --no-build-isolation -q
+```
+
+```bash
+pip install sen2sr mlstac git+https://github.com/ESDS-Leipzig/cubo.git
 ```
 
 
@@ -137,6 +152,12 @@ import mlstac
 import torch
 import cubo
 
+# Download the model
+mlstac.download(
+  file="https://huggingface.co/tacofoundation/sen2sr/resolve/main/SEN2SRLite/NonReference_RGBN_x4/mlm.json",
+  output_dir="model/SEN2SRLite_RGBN",
+)
+
 # Create a Sentinel-2 L2A data cube for a specific location and date range
 da = cubo.create(
     lat=39.49152740347753,
@@ -157,10 +178,6 @@ X = torch.from_numpy(original_s2_numpy).float().to(device)
 X = torch.nan_to_num(X, nan=0.0, posinf=0.0, neginf=0.0)
 
 # Load the model
-#mlstac.download(
-#  file="https://huggingface.co/tacofoundation/sen2sr/resolve/main/SEN2SRLite/NonReference_RGBN_x4/mlm.json",
-#  output_dir="model/SEN2SRLite_RGBN",
-#)
 model = mlstac.load("model/SEN2SRLite_RGBN").compiled_model(device=device)
 
 # Apply model

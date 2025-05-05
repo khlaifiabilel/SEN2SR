@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sen2sr"
-version = "0.5.0"
+version = "0.8.0"
 description = "A Python package to super-resolve Sentinel-2 satellite imagery up to 2.5 meters."
 authors = ["Cesar Aybar <cesar.aybar@uv.es>", "Julio Contreras <julio.contreras@uv.es>"]
 repository = "https://github.com/ESAOpenSR/sen2sr"
@@ -13,6 +13,8 @@ packages = [
 [tool.poetry.dependencies]
 python = ">=3.10,<4.0"
 tqdm = ">=4.67.1"
+numpy = ">=2.0.2"
+einops = ">=0.8.1"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -28,11 +30,6 @@ mkdocs = "^1.4.2"
 mkdocs-material = "^9.2.7"
 mkdocstrings = {extras = ["python"], version = "^0.26.1"}
 
-[tool.poetry.group.full.dependencies]
-numpy = ">=2.0.2"
-einops = ">=0.8.1"
-mamba-ssm = ">=2.2.4"
-
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
@@ -46,7 +43,6 @@ check_untyped_defs = "True"
 warn_return_any = "True"
 warn_unused_ignores = "True"
 show_error_codes = "True"
-
 
 
 [tool.pytest.ini_options]
