@@ -53,8 +53,8 @@
 
 | Model | Description | Run Link |
 |--------|-------------|---------|
-| **Run SENSRLite** | A lightweight SR model optimized for running fast! | <a target="_blank" href="https://colab.research.google.com/drive/1UQE0Zwvjc4ZRlbMRPOV3gS67jeMFc_hp"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a> |
-| **Run SENSR** | Our most accurate SR model! | <a target="_blank" href="https://colab.research.google.com/drive/1TKGAhNbZUxu-q3WDfeICBj1shcQmXcUm"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a> |
+| **Run SENSRLite** | A lightweight SR model optimized for running fast! | <a target="_blank" href="https://colab.research.google.com/drive/1x65GoI5hOfgX61LhtbATSBm7HySUHSw9?usp=sharing"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a> |
+| **Run SENSR** | Our most accurate SR model! | <a target="_blank" href="https://colab.research.google.com/drive/1MdhdsPwJyV3f0jUgW_WaVeO3-aqA80OG?usp=sharing"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a> |
 </a> |  
 
 ## **Installation**
