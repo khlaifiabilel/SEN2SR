@@ -1,11 +1,10 @@
-from typing import Optional, Tuple
+from typing import Tuple
 
 import numpy as np
 import torch
-import torch.nn.functional as F
 from tqdm import tqdm
 
-from supers2.xai.utils import gini, vis_saliency_kde
+from sen2sr.xai.utils import gini, vis_saliency_kde
 
 
 def attribution_objective(attr_func, h: int, w: int, window: int = 16):
@@ -143,8 +142,7 @@ def create_lam_inputs(
 
 def lam(
     X: torch.Tensor,
-    model: torch.nn.Module,
-    model_scale: float = 4,
+    model: torch.nn.Module,    
     h: int = 240,
     w: int = 240,
     window: int = 32,
@@ -177,7 +175,7 @@ def lam(
 
     # Compute gradient for each interpolated image
     for i in tqdm(range(cube.shape[0]), desc="Computing gradients"):
-
+        
         # Convert interpolated image to tensor and set requires_grad for backpropagation
         img_tensor = cube[i].float()[None]
         img_tensor.requires_grad_(True)
@@ -186,6 +184,10 @@ def lam(
         result = model(img_tensor)
         target = attr_objective(result)
         target.backward()  # Compute gradients
+
+        # determine the scale of the model
+        if i == 0:
+            scale_factor = result.shape[2] / img_tensor.shape[2]
 
         # Extract gradient, handling NaNs if present
         grad = img_tensor.grad.cpu().numpy()
@@ -207,7 +209,7 @@ def lam(
     # ratio_img_to_window = (X.shape[1] * model_scale) // window
 
     # KDE estimation
-    kde_map = vis_saliency_kde(grad_norm, scale=model_scale, bandwidth=1.0)
+    kde_map = np.log1p(vis_saliency_kde(grad_norm, scale=scale_factor, bandwidth=1.0))
     complexity_metric = (1 - gini_index) * 100  # / ratio_img_to_window
 
     # Estimate blurriness sensitivity

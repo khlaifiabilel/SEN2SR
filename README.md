@@ -40,12 +40,12 @@
 ## **Table of Contents**
 
 - [**Overview**](#overview-)
-- [**Installation** ⚙️](#installation-)
-- [**Predict 10m and 20m bands**](#predict-10m-and-20m-bands)
-- [**Predict only RGBNIR bands**](#predict-only-rgbnir-bands)
+- [**Installation**](#installation-)
+- [**From 10m and 20m Sentinel-2 bands to 2.5m**](#from-10m-and-20m-sentinel-2-bands-to-25m)
+- [**From 10m Sentinel-2 bands to 2.5m**](#from-10m-sentinel-2-bands-to-25m)
+- [**From 20m Sentinel-2 bands to 10m**](#from-20m-sentinel-2-bands-to-10m)
 - [**Predict on large images**](#predict-on-large-images)
-- [**Estimate the Local Attention Map of the model**](#estimate-the-local-attention-map-of-the-model-)
-
+- [**Estimate the Local Attention Map**](#estimate-the-local-attention-map)
 
 ## **Overview**
 
@@ -66,7 +66,7 @@ pip install mlstac sen2sr[full]
 ```
 
 
-## Predict 10m and 20m bands
+## From 10m and 20m Sentinel-2 bands to 2.5m
 
 
 This example demonstrates the use of the `SEN2SRLite` model to enhance the spatial resolution of Sentinel-2 imagery. A 
@@ -76,13 +76,9 @@ HR output. The visualization compares the original RGB composite to the super-re
 
 
 ```python
-import matplotlib.pyplot as plt
-import numpy as np
+import mlstac
 import torch
 import cubo
-
-import sen2sr
-import mlstac
 
 # Download the model
 mlstac.download(
@@ -91,9 +87,9 @@ mlstac.download(
 )
 
 # Load the model
-model = mlstac.load("model/SEN2SRLite").compiled_model()
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+model = mlstac.load("model/SEN2SRLite").compiled_model(device=device)
 model = model.to(device)
-
 
 # Create a Sentinel-2 L2A data cube for a specific location and date range
 da = cubo.create(
@@ -103,10 +99,9 @@ da = cubo.create(
     bands=["B02", "B03", "B04", "B05", "B06", "B07", "B08", "B8A", "B11", "B12"],
     start_date="2023-01-01",
     end_date="2023-12-31",
-    edge_size=64,
+    edge_size=128,
     resolution=10
 )
-
 
 # Prepare the data to be used in the model, select just one sample 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -115,139 +110,24 @@ X = torch.from_numpy(original_s2_numpy).float().to(device)
 
 # Apply model
 superX = model(X[None]).squeeze(0)
-
-# Visualize the results
-fig, ax = plt.subplots(1, 2, figsize=(10, 5))
-ax[0].imshow(X[[2, 1, 0]].permute(1, 2, 0).cpu().numpy()*4)
-ax[0].set_title("Original S2")
-ax[1].imshow(superX[[2, 1, 0]].permute(1, 2, 0).cpu().numpy()*4)
-ax[1].set_title("Enhanced Resolution S2")
-plt.show()
 ```
 
 <p align="center">
-  <img src="assets/images/first_plot.png" width="100%">
+  <img src="assets/srimg01.png" width="100%">
 </p>
 
 
-## **Predict only RGBNIR bands**
-
-This example demonstrates the use of the SEN2SRLite_RGBN model variant to enhance the spatial resolution 
-of only the 10 m Sentinel-2 bands: red (B04), green (B03), blue (B02), and near-infrared (B08). A Sentinel-2 L2A 
-data cube is created using the cubo library for a specific location and date range. The input is normalized and 
-passed to a pretrained non-reference model optimized for RGB+NIR inputs. 
+## From 10m Sentinel-2 bands to 2.5m
 
 
-```python
-import matplotlib.pyplot as plt
-import numpy as np
-import torch
-import cubo
-
-import sen2sr
-import mlstac
-
-# Create a Sentinel-2 L2A data cube for a specific location and date range
-da = cubo.create(
-    lat=39.49152740347753,
-    lon=-0.4308725142800361,
-    collection="sentinel-2-l2a",
-    bands=["B04", "B03", "B02", "B08"],
-    start_date="2023-01-01",
-    end_date="2023-12-31",
-    edge_size=64,
-    resolution=10
-)
-
-
-# Prepare the data to be used in the model
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-original_s2_numpy = (da[11].compute().to_numpy() / 10_000).astype("float32")
-X = torch.from_numpy(original_s2_numpy).float().to(device)
-
-
-# Download the model
-#mlstac.download(
-#  file="https://huggingface.co/tacofoundation/sen2sr/resolve/main/SEN2SRLite/NonReference_RGBN_x4/mlm.json",
-#  output_dir="model/SEN2SRLite_RGBN",
-#)
-
-# Load the model
-model = mlstac.load("model/SEN2SRLite_RGBN").compiled_model()
-model = model.to(device)
-
-# Apply model
-superX = model(X[None]).squeeze(0)
-```
-
-## **Predict on large images**
-
-This example demonstrates the use of `SEN2SRLite_RGBN` for super-resolving large Sentinel-2 RGB+NIR images by chunking the 
-input into smaller overlapping tiles. Although the model is trained to operate on fixed-size 128×128 patches, the 
-`sen2sr.predict_large` utility automatically segments larger inputs into these tiles, applies the model to 
-each tile independently, and then reconstructs the full image. An overlap margin (e.g., 32 pixels) is 
-introduced between tiles to minimize edge artifacts and ensure continuity across tile boundaries.
-
-```python
-import matplotlib.pyplot as plt
-import numpy as np
-import torch
-import cubo
-
-import sen2sr
-import mlstac
-
-# Create a Sentinel-2 L2A data cube for a specific location and date range
-da = cubo.create(
-    lat=39.49152740347753,
-    lon=-0.4308725142800361,
-    collection="sentinel-2-l2a",
-    bands=["B04", "B03", "B02", "B08"],
-    start_date="2023-01-01",
-    end_date="2023-12-31",
-    edge_size=1024,
-    resolution=10
-)
-
-
-# Prepare the data to be used in the model
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-original_s2_numpy = (da[11].compute().to_numpy() / 10_000).astype("float32")
-X = torch.from_numpy(original_s2_numpy).float().to(device)
-
-# Load the model
-#mlstac.download(
-#  file="https://huggingface.co/tacofoundation/sen2sr/resolve/main/SEN2SRLite/NonReference_RGBN_x4/mlm.json",
-#  output_dir="model/SEN2SRLite_RGBN",
-#)
-model = mlstac.load("model/SEN2SRLite_RGBN").compiled_model()
-
-# Apply model
-superX = sen2sr.predict_large(
-    model=model,
-    X=X, # The input tensor
-    overlap=32, # The overlap between the patches
-)
-```
-
-
-### Estimate the Local Attention Map of the model 📊
-
-This example computes the Local Attention Map (LAM) to analyze the model's spatial sensitivity 
-and robustness. The input image is scanned with a sliding window, and the model's attention is 
-estimated across multiple upscaling factors. The resulting KDE map highlights regions where 
-the model focuses more strongly, while the robustness vector quantifies the model's stability 
-to spatial perturbations.
+This example demonstrates the use of the `SEN2SRLite NonReference_RGBN_x4` model variant to enhance the spatial resolution 
+of only the 10 m Sentinel-2 bands: red (B04), green (B03), blue (B02), and near-infrared (B08). A Sentinel-2 L2A data cube is created using the cubo library for a specific location and date range. The input is normalized and passed to a pretrained non-reference model optimized for RGB+NIR inputs. 
 
 
 ```python
-import matplotlib.pyplot as plt
-import numpy as np
+import mlstac
 import torch
 import cubo
-
-import sen2sr
-import mlstac
 
 # Create a Sentinel-2 L2A data cube for a specific location and date range
 da = cubo.create(
@@ -266,31 +146,178 @@ da = cubo.create(
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 original_s2_numpy = (da[11].compute().to_numpy() / 10_000).astype("float32")
 X = torch.from_numpy(original_s2_numpy).float().to(device)
+X = torch.nan_to_num(X, nan=0.0, posinf=0.0, neginf=0.0)
+
+# Load the model
+#mlstac.download(
+#  file="https://huggingface.co/tacofoundation/sen2sr/resolve/main/SEN2SRLite/NonReference_RGBN_x4/mlm.json",
+#  output_dir="model/SEN2SRLite_RGBN",
+#)
+model = mlstac.load("model/SEN2SRLite_RGBN").compiled_model(device=device)
+
+# Apply model
+superX = model(X[None]).squeeze(0)
+```
+
+<p align="center">
+  <img src="assets/srimg02.png" width="100%">
+</p>
 
 
+## From 20m Sentinel-2 bands to 10m
+
+This example demonstrates the use of the `SEN2SRLite Reference_RSWIR_x2` model variant to enhance the spatial resolution of the 20 m Sentinel-2 bands: red-edge (B05, B06, B07), shortwave infrared (B11, B12), and near-infrared (B8A) to 10 m. 
+
+
+```python
+import mlstac
+import torch
+import cubo
+
+# Download the model
+mlstac.download(
+  file="https://huggingface.co/tacofoundation/sen2sr/resolve/main/SEN2SRLite/Reference_RSWIR_x2/mlm.json",
+  output_dir="model/SEN2SRLite_Reference_RSWIR_x2",
+)
+
+# Create a Sentinel-2 L2A data cube for a specific location and date range
+da = cubo.create(
+    lat=39.49152740347753,
+    lon=-0.4308725142800361,
+    collection="sentinel-2-l2a",
+    bands=["B02", "B03", "B04", "B05", "B06", "B07", "B08", "B8A", "B11", "B12"],
+    start_date="2023-01-01",
+    end_date="2023-12-31",
+    edge_size=128,
+    resolution=10
+)
+
+# Prepare the data to be used in the model
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+original_s2_numpy = (da[11].compute().to_numpy() / 10_000).astype("float32")
+X = torch.from_numpy(original_s2_numpy).float().to(device)
+
+# Load the model
+model = mlstac.load("model/SEN2SRLite_Reference_RSWIR_x2").compiled_model(device=device)
+model = model.to(device)
+
+# Apply model
+superX = model(X[None]).squeeze(0)
+```
+
+<p align="center">
+  <img src="assets/srimg03.png" width="100%">
+</p>
+
+
+## **Predict on large images**
+
+This example demonstrates the use of `SEN2SRLite NonReference_RGBN_x4` for super-resolving large Sentinel-2 RGB+NIR images by chunking the 
+input into smaller overlapping tiles. Although the model is trained to operate on fixed-size 128×128 patches, the `sen2sr.predict_large` utility automatically segments larger inputs into these tiles, applies the model to each tile independently, and then reconstructs the full image. An overlap margin (e.g., 32 pixels) is introduced between tiles to minimize edge artifacts and ensure continuity across tile boundaries.
+
+```python
+import mlstac
+import sen2sr
+import torch
+import cubo
+
+# Create a Sentinel-2 L2A data cube for a specific location and date range
+da = cubo.create(
+    lat=39.49152740347753,
+    lon=-0.4308725142800361,
+    collection="sentinel-2-l2a",
+    bands=["B02", "B03", "B04", "B05", "B06", "B07", "B08", "B8A", "B11", "B12"],
+    start_date="2023-01-01",
+    end_date="2023-12-31",
+    edge_size=1024,
+    resolution=10
+)
+
+# Prepare the data to be used in the model
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+original_s2_numpy = (da[11].compute().to_numpy() / 10_000).astype("float32")
+X = torch.from_numpy(original_s2_numpy).float().to(device)
+X = torch.nan_to_num(X, nan=0.0, posinf=0.0, neginf=0.0)
+
+# Load the model
+model = mlstac.load("model/SEN2SRLite").compiled_model(device=device)
+
+
+# Apply model
+superX = sen2sr.predict_large(
+    model=model,
+    X=X, # The input tensor
+    overlap=32, # The overlap between the patches
+)
+```
+
+<p align="center">
+  <img src="assets/srimg05.png" width="95%">
+</p>
+
+
+### Estimate the Local Attention Map
+
+
+This example computes the Local Attention Map (LAM) to analyze the model's spatial sensitivity 
+and robustness. The input image is scanned with a sliding window, and the model's attention is 
+estimated across multiple upscaling factors. The resulting KDE map highlights regions where 
+the model focuses more strongly, while the robustness vector quantifies the model's stability 
+to spatial perturbations.
+
+
+```python
+import mlstac
+import sen2sr
+import torch
+import cubo
+
+# Create a Sentinel-2 L2A data cube for a specific location and date range
+da = cubo.create(
+    lat=39.49152740347753,
+    lon=-0.4308725142800361,
+    collection="sentinel-2-l2a",
+    bands=["B04", "B03", "B02", "B08"],
+    start_date="2023-01-01",
+    end_date="2023-12-31",
+    edge_size=128,
+    resolution=10
+)
+
+
+# Prepare the data to be used in the model
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+original_s2_numpy = (da[11].compute().to_numpy() / 10_000).astype("float32")
+X = torch.from_numpy(original_s2_numpy).float().to(device)
+X = torch.nan_to_num(X, nan=0.0, posinf=0.0, neginf=0.0)
+
+# Load the model
+#mlstac.download(
+#  file="https://huggingface.co/tacofoundation/sen2sr/resolve/main/SEN2SRLite/NonReference_RGBN_x4/mlm.json",
+#  output_dir="model/SEN2SRLite_RGBN",
+#)
+model = mlstac.load("model/SEN2SRLite_RGBN").compiled_model(device=device)
+
+# Apply model
 kde_map, complexity_metric, robustness_metric, robustness_vector = sen2sr.lam(
-    X=X.cpu(), # The input tensor
-    model=model.srx4, # The SR model
+    X=X, # The input tensor
+    model=model, # The SR model
     h=240, # The height of the window
     w=240, # The width of the window
-    window=128, # The window size
+    window=32, # The window size
     scales = ["2x", "3x", "4x", "5x", "6x"]
 )
 
-# Visualize the results
-plt.imshow(kde_map)
-plt.title("Kernel Density Estimation")
-plt.show()
 
-plt.plot(robustness_vector)
-plt.title("Robustness Vector")
+import matplotlib.pyplot as plt
+fig, ax = plt.subplots(1, 2, figsize=(12, 6))
+ax[0].imshow(kde_map)
+ax[0].set_title("Kernel Density Estimation")
+ax[1].plot(robustness_vector)
+ax[1].set_title("Robustness Vector")
 plt.show()
 ```
 
 <p align="center">
-  <img src="assets/images/kernel.png" width="50%">
-</p>
-<br>
-<p align="center">
-  <img src="assets/images/vector.png" width="70%">
+  <img src="assets/srimg04.png" width="95%">
 </p>
