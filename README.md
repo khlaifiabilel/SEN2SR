@@ -1,13 +1,9 @@
 # SEN2SR
 
 <p align="center">
-  <img src="assets/sen2sr.gif" width="90%">
+  <img src="https://github.com/user-attachments/assets/9d6345e3-0c5a-4b53-b8ff-e0aa28f99c96" width="100%">
 </p>
 
-
-<p align="center">
-   <em>A Python package for enhancing the spatial resolution of Sentinel-2 satellite images up to 2.5 meters</em> 🚀
-</p>
 
 
 <p align="center">
