@@ -19,7 +19,12 @@
 <a href="https://pycqa.github.io/isort/" target="_blank">
     <img src="https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336" alt="isort">
 </a>
+<a href="https://huggingface.co/models" target="_blank">
+    <img src="https://huggingface.co/datasets/huggingface/badges/resolve/main/model-on-hf-sm.svg" alt="isort">
+</a>
 </p>
+
+
 
 
 ---
