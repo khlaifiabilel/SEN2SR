@@ -1,8 +1,9 @@
 # SEN2SR
-
+### *A radiometrically and spatially consistent super-resolution framework for Sentinel-2*
 <p align="center">
   <img src="https://github.com/user-attachments/assets/9d6345e3-0c5a-4b53-b8ff-e0aa28f99c96" width="100%">
 </p>
+
 
 
 
@@ -64,6 +65,11 @@ pip install sen2sr mlstac git+https://github.com/ESDS-Leipzig/cubo.git
 ```
 
 For using the full version of **SEN2SR**, which employs the Mamba architecture, install as follows:
+
+> ⚠️ **Warning**  
+> `mamba-ssm` **requires a GPU runtime** and **CUDA version > 12** to function properly.  
+> Installation may take a significant amount of time. **Please avoid interrupting the process.**
+
 
 1. Create a fresh Conda environment:
 
