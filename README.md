@@ -34,7 +34,8 @@
 
 **PyPI**: [https://pypi.org/project/sen2sr/](https://pypi.org/project/sen2sr/) 🛠️
 
-**Preprint**: [https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5247739](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5247739) 🛠️
+**Preprint**: [https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5247739](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5247739) 📄
+
 ---
 
 ## **Table of Contents**
