@@ -56,7 +56,7 @@
 |--------|-------------|---------|
 | **Run SENSRLite** | A lightweight SR model optimized for running fast! | <a target="_blank" href="https://colab.research.google.com/drive/1x65GoI5hOfgX61LhtbATSBm7HySUHSw9?usp=sharing"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a> |
 | **Run SENSR** | Our lightweight SR model! | <a target="_blank" href="https://colab.research.google.com/drive/1MdhdsPwJyV3f0jUgW_WaVeO3-aqA80OG?usp=sharing"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a> |
-| **Run LDSR-S2 & SEN2SR** | ESAOpenSR's flagship  latent diffusion model | <a target="_blank" href="[YOUR_LINK_HERE](https://colab.research.google.com/drive/1NJuyswsquOLMFc_AP93P_5QcZnbNhGuB?usp=sharing)"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a> |
+| **Run LDSR-S2 & SEN2SR** | ESAOpenSR's flagship  latent diffusion model | <a target="_blank" href="https://colab.research.google.com/drive/1NJuyswsquOLMFc_AP93P_5QcZnbNhGuB?usp=sharing"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a> |
 
 
 ## **Installation**
