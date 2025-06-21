@@ -55,8 +55,9 @@
 | Model | Description | Run Link |
 |--------|-------------|---------|
 | **Run SENSRLite** | A lightweight SR model optimized for running fast! | <a target="_blank" href="https://colab.research.google.com/drive/1x65GoI5hOfgX61LhtbATSBm7HySUHSw9?usp=sharing"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a> |
-| **Run SENSR** | Our most accurate SR model! | <a target="_blank" href="https://colab.research.google.com/drive/1MdhdsPwJyV3f0jUgW_WaVeO3-aqA80OG?usp=sharing"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a> |
-</a> |  
+| **Run SENSR** | Our lightweight SR model! | <a target="_blank" href="https://colab.research.google.com/drive/1MdhdsPwJyV3f0jUgW_WaVeO3-aqA80OG?usp=sharing"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a> |
+| **Run LDSR-S2 & SEN2SR** | ESAOpenSR's flagship  latent diffusion model | <a target="_blank" href="https://colab.research.google.com/drive/1NJuyswsquOLMFc_AP93P_5QcZnbNhGuB?usp=sharing"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a> |
+
 
 ## **Installation**
 
@@ -106,7 +107,8 @@ Adapted from this [state-spaces/mamba issue](https://github.com/state-spaces/mam
 This example demonstrates the use of the `SEN2SRLite` model to enhance the spatial resolution of Sentinel-2 imagery. A 
 Sentinel-2 L2A data cube is created over a specified region and time range using the cubo library, including both 10 m 
 and 20 m bands. The pretrained model, downloaded via mlstac, takes a single normalized sample as input and predicts a 
-HR output. The visualization compares the original RGB composite to the super-resolved result.
+HR output. The visualization compares the original RGB composite to the super-resolved result.  
+LDSR-S2 is also available.
 
 
 ```python
